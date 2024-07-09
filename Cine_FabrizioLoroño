@@ -1,0 +1,98 @@
+CREATE DATABASE cine;
+USE `cine`;
+
+CREATE TABLE usuario (
+    ID_Usuario INT AUTO_INCREMENT PRIMARY KEY,
+    Nombre_Usuario VARCHAR(50) NOT NULL,
+    Contraseña VARCHAR(50) NOT NULL,
+    Membresia BOOL,
+    Forma_Pago VARCHAR(25) NOT NULL
+);
+
+CREATE TABLE clientes (
+    Documento INT NOT NULL PRIMARY KEY,
+    NombreyApellido VARCHAR(50) NOT NULL,
+    Direccion VARCHAR(50) NOT NULL,
+    Email VARCHAR(50) NOT NULL,
+    Telefono INT NOT NULL,
+    Fecha_Nacimiento DATE NOT NULL,
+    ID_Usuario INT,
+    FOREIGN KEY (ID_Usuario) REFERENCES usuario(ID_Usuario)
+);
+
+CREATE TABLE cine (
+    ID_Cine INT AUTO_INCREMENT PRIMARY KEY,
+    Nombre_Cine VARCHAR(50) NOT NULL,
+    Ubicacion VARCHAR(50) NOT NULL
+);
+
+CREATE TABLE peliculas (
+    ID_Pelicula INT AUTO_INCREMENT PRIMARY KEY,
+    Clasificacion VARCHAR(15) NOT NULL,
+    Genero VARCHAR(30) NOT NULL,
+    Duracion TIME NOT NULL,
+    Fecha_Estreno DATE NOT NULL,
+    ID_Cine INT,
+    Documento INT,
+    FOREIGN KEY (ID_Cine) REFERENCES cine(ID_Cine),
+    FOREIGN KEY (Documento) REFERENCES clientes(Documento)
+);
+
+CREATE TABLE empleados (
+    Cuit INT PRIMARY KEY,
+    NombreyApellido VARCHAR(50) NOT NULL,
+    Direccion VARCHAR(50) NOT NULL,
+    Email VARCHAR(50) NOT NULL,
+    Telefono INT NOT NULL,
+    Fecha_Ingreso DATE NOT NULL,
+    ID_Cine INT,
+    FOREIGN KEY (ID_Cine) REFERENCES cine(ID_Cine)
+);
+
+CREATE TABLE salas (
+    ID_Sala INT AUTO_INCREMENT PRIMARY KEY,
+    Tipo_Sala VARCHAR(30) NOT NULL,
+    Asientos VARCHAR(4) NOT NULL,
+    ID_Cine INT,
+    FOREIGN KEY (ID_Cine) REFERENCES cine(ID_Cine)
+);
+
+CREATE TABLE baños (
+    ID_Baño INT AUTO_INCREMENT PRIMARY KEY,
+    Tipo_Baño VARCHAR(15) NOT NULL,
+    ID_Cine INT,
+    FOREIGN KEY (ID_Cine) REFERENCES cine(ID_Cine)
+);
+
+CREATE TABLE ventas (
+    ID_Compra INT NOT NULL PRIMARY KEY,
+    Merch VARCHAR(50) NOT NULL,
+    Bebidas VARCHAR(25) NOT NULL,
+    Comida VARCHAR(50) NOT NULL,
+    ID_Cine INT,
+    FOREIGN KEY (ID_Cine) REFERENCES cine(ID_Cine)
+);
+
+CREATE TABLE combos (
+    Tipo_Combo INT PRIMARY KEY,
+    Descuento_Membresia BOOL NOT NULL,
+    ID_Compra INT,
+    FOREIGN KEY (ID_Compra) REFERENCES ventas(ID_Compra)
+);
+
+CREATE TABLE entradas (
+    Numero_Entrada INT AUTO_INCREMENT PRIMARY KEY,
+    Fecha_Compra DATETIME NOT NULL,
+    ID_Compra INT,
+    FOREIGN KEY (ID_Compra) REFERENCES ventas(ID_Compra)
+);
+
+ALTER TABLE cine
+ADD COLUMN ID_Pelicula INT,
+ADD COLUMN ID_Compra INT,
+ADD FOREIGN KEY (ID_Pelicula) REFERENCES peliculas(ID_Pelicula),
+ADD FOREIGN KEY (ID_Compra) REFERENCES ventas(ID_Compra);
+
+ALTER TABLE ventas
+ADD COLUMN Tipo_Combo INT,
+ADD FOREIGN KEY (Tipo_Combo) REFERENCES combos(Tipo_Combo);
